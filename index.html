@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1">
+<title>Observação de Nuvens</title>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;background:#f0f2f5;color:#1a1a2e;min-height:100vh}
+.pg{max-width:500px;margin:0 auto;padding:1.25rem 1rem 5rem}
+.pg-w{max-width:720px;margin:0 auto;padding:1rem}
+.pg-n{max-width:400px;margin:0 auto;padding:2rem 1rem}
+.card{background:#fff;border:1px solid #e8eaed;border-radius:12px;padding:1.25rem}
+h1{font-size:1.375rem;font-weight:600}
+h2{font-size:1.125rem;font-weight:600}
+.muted{color:#666;font-size:.875rem}
+.tiny{font-size:.75rem;color:#999}
+.fl{display:block;font-size:.6875rem;font-weight:600;color:#666;text-transform:uppercase;letter-spacing:.06em;margin-bottom:.375rem}
+input[type=text],input[type=number],input[type=password],textarea{display:block;width:100%;padding:.5rem .75rem;border:1px solid #ddd;border-radius:8px;font-size:.9375rem;font-family:inherit;color:#1a1a2e;background:#fff;outline:none}
+input:focus,textarea:focus{border-color:#185FA5}
+textarea{resize:none;line-height:1.5}
+.btn{display:block;width:100%;padding:.75rem;border:none;border-radius:10px;font-size:.9375rem;font-weight:600;cursor:pointer;font-family:inherit;text-align:center}
+.btn:active{opacity:.8}
+.bp{background:#185FA5;color:#fff}
+.bs{background:#fff;color:#333;border:1px solid #ddd}
+.rd{display:flex;flex-direction:column;gap:.5rem}
+.ro{display:flex;align-items:center;gap:.625rem;padding:.625rem .75rem;border:1px solid #e0e0e0;border-radius:8px;cursor:pointer;background:#fafafa}
+.ro.on{border-color:#185FA5;background:#EBF3FB}
+.rdot{width:16px;height:16px;border-radius:50%;border:2px solid #ccc;flex-shrink:0}
+.ro.on .rdot{border-color:#185FA5;background:#185FA5}
+.rl{font-size:.875rem}
+.chips{display:flex;flex-wrap:wrap;gap:.375rem}
+.chip{padding:.375rem .75rem;border:1px solid #ddd;border-radius:999px;background:#fafafa;color:#444;font-size:.8125rem;cursor:pointer;font-family:inherit}
+.chip.on{border-color:var(--ac);background:var(--ac);color:#fff}
+.chk-g{display:flex;gap:.625rem}
+.chk{flex:1;display:flex;align-items:center;justify-content:center;gap:.5rem;padding:.625rem;border:1px solid #e0e0e0;border-radius:8px;cursor:pointer;background:#fafafa}
+.chk.on{border-color:#185FA5;background:#EBF3FB}
+.cbox{width:16px;height:16px;border:2px solid #ccc;border-radius:4px;flex-shrink:0;display:flex;align-items:center;justify-content:center}
+.chk.on .cbox{background:#185FA5;border-color:#185FA5}
+.cbox svg{display:none}
+.chk.on .cbox svg{display:block}
+.prog{height:3px;background:#e0e0e0;border-radius:999px;overflow:hidden;margin-bottom:.625rem}
+.progf{height:100%;background:#185FA5;border-radius:999px;transition:width .3s}
+.stitle{display:flex;align-items:baseline;gap:.5rem;margin-bottom:1rem}
+.sbadge{font-size:.6875rem;font-weight:600;background:#185FA5;color:#fff;border-radius:5px;padding:2px 6px}
+.stext{font-size:1rem;font-weight:600}
+.hint{font-size:.75rem;color:#666;background:#f5f5f5;border-radius:6px;padding:.375rem .625rem;margin-top:.375rem;border-left:2px solid var(--ac,#185FA5)}
+.cb{border:1px solid #e8eaed;border-radius:10px;padding:1rem;margin-bottom:.75rem}
+.photo-prev{width:100%;max-height:280px;object-fit:cover;border-radius:10px;border:1px solid #e0e0e0;display:block;margin-bottom:.75rem}
+.ref-a{display:flex;align-items:center;gap:.5rem;padding:.625rem .75rem;background:#f8f9fa;border:1px solid #e8eaed;border-radius:8px;text-decoration:none;color:#185FA5;font-size:.8125rem;margin-bottom:.375rem}
+.bnav{position:fixed;bottom:0;left:0;right:0;background:#fff;border-top:1px solid #e8eaed;padding:.75rem 1rem;display:flex;gap:.625rem}
+.pc{background:#fff;border:1px solid #e8eaed;border-radius:10px;margin-bottom:.625rem;overflow:hidden}
+.pch{padding:.875rem 1rem;cursor:pointer;display:flex;justify-content:space-between;align-items:flex-start}
+.pcb{padding:.875rem 1rem;border-top:1px solid #f0f0f0;font-size:.8125rem}
+.dr{display:flex;gap:.5rem;margin-bottom:.375rem;font-size:.8125rem}
+.dl{color:#666;min-width:130px;flex-shrink:0}
+.dv{color:#1a1a2e}
+.tag{display:inline-block;font-size:.6875rem;background:#EBF3FB;color:#185FA5;padding:2px 8px;border-radius:999px;margin:2px}
+.lt{display:flex;gap:.375rem;justify-content:center;margin-bottom:1.5rem}
+.lb{padding:.3125rem .875rem;border:1px solid #ddd;border-radius:999px;background:#fff;color:#666;font-size:.8125rem;cursor:pointer;font-family:inherit}
+.lb.on{border-color:#185FA5;background:#185FA5;color:#fff;font-weight:600}
+.bk{background:none;border:none;color:#666;font-size:.875rem;cursor:pointer;padding:0;display:flex;align-items:center;gap:.25rem;font-family:inherit;margin-bottom:1rem}
+.sh{display:flex;justify-content:space-between;align-items:center;margin-bottom:.5rem}
+.thumb{width:40px;height:40px;border-radius:6px;object-fit:cover;border:1px solid #e0e0e0;flex-shrink:0}
+.g2{display:grid;grid-template-columns:1fr 1fr;gap:.75rem}
+.sring{width:56px;height:56px;border-radius:50%;background:#edf7ed;border:1px solid #a5d6a7;display:flex;align-items:center;justify-content:center;margin:0 auto 1rem}
+.cico{width:56px;height:56px;border-radius:12px;background:#EBF3FB;border:1px solid #B5D4F4;display:flex;align-items:center;justify-content:center;margin:0 auto 1rem}
+.ph{display:flex;align-items:center;justify-content:space-between;margin-bottom:1.25rem;flex-wrap:wrap;gap:.5rem}
+.phb{display:flex;gap:.5rem}
+.phbt{padding:.375rem .875rem;border:1px solid #ddd;border-radius:8px;background:#fff;color:#444;font-size:.8125rem;cursor:pointer;font-family:inherit}
+.err{font-size:.8125rem;color:#d32f2f;margin-top:.375rem}
+.rm{background:none;border:none;color:#aaa;font-size:.75rem;cursor:pointer;font-family:inherit}
+.fld{margin-bottom:.875rem}
+</style>
+</head>
+<body>
+<div id="app"></div>
+<script>
+// ─── CONFIG — substitui pelo teu URL do Apps Script ─────
+const GAS_URL   = "YOUR_APPS_SCRIPT_URL_HERE";
+const PROF_CODE = "PORTO2026";
+
+// ─── TRANSLATIONS ───────────────────────────────────────
+const TR={pt:{appTitle:"Observação de Nuvens",appSub:"Climatologia · Faculdade de Letras da UP",start:"Iniciar observação",profBtn:"Acesso docente",actNote:"Atividade prática — Temas 6 & 7",profTitle:"Painel do docente",profCount:n=>`${n} observação(ões) recolhida(s)`,refresh:"Atualizar",exitBtn:"Sair",loading:"A carregar...",noSubs:"Ainda não há observações.",profCode:"Código de acesso",enterBtn:"Entrar",backBtn:"Voltar",wrongCode:"Código incorreto.",doneTitle:"Observação registada!",doneMsg:"Os teus dados foram guardados com sucesso.",newObs:"Nova observação",homeBtn:"Início",prevBtn:"Anterior",nextBtn:"Próximo",submitBtn:"Submeter observação",savingBtn:"A guardar...",saveErr:"Erro ao guardar. Verifica a ligação.",steps:["Identificação","Fotografia","Cobertura do Céu","Cor e Visibilidade","Tipos de Nuvens","Condições de Superfície","Classificação"],fName:"Nome completo",fGroup:"Grupo",fGroupPh:"Ex: Grupo 3",fLoc:"Local de observação",fDate:"Data",photoTitle:"Fotografia do Céu",photoDesc:"Tira uma fotografia do céu no local de observação.",takePhoto:"Tirar fotografia",changePhoto:"Alterar fotografia",coverType:"Tipo de cobertura",coverTotal:"Cobertura total do céu",coverPartial:"Cobertura parcial de nuvens",coverWhat:"O que cobre o céu?",coverPct:"Percentagem de cobertura",coverOpts:["Nevoeiro","Chuva pesada","Neve pesada","Areia","Spray / Fumaça","Pó","Cinza vulcânica"],partialOpts:[{v:"nenhuma",l:"Nenhuma"},{v:"poucas",l:"Poucas (< 10%)"},{v:"isoladas",l:"Isoladas (10–25%)"},{v:"dispersas",l:"Dispersas (25–50%)"},{v:"quebradas",l:"Quebradas (50–90%)"},{v:"nublado",l:"Céu nublado (90–100%)"}],skyColor:"Cor do céu",visibility:"Visibilidade",colorOpts:["Não é possível observar","Azul profundo","Azul","Azul claro","Azul pálido leitoso"],visibOpts:["Não é possível observar","Excepcionalmente claro","Claro","Um pouco nebuloso","Muito nebuloso","Extremamente nebuloso"],cloudDesc:"Seleciona todos os géneros que consegues identificar.",noneLabel:"Nenhuma",precip:"Precipitação",rain:"Chuva",snow:"Neve",temp:"Temperatura (°C)",humid:"Humidade (%)",tempPh:"Ex: 16",humPh:"Ex: 78",classifDesc:"Preenche a classificação das nuvens. Usa o botão para adicionar mais géneros.",cloudN:n=>`Nuvem ${n}`,addCloud:"+ Adicionar nuvem",removeCloud:"Remover",fTipo:"Tipo e abreviatura",tipoPh:"Ex: Cirrus — Ci",fNivel:"Nível / Andar",nivelPh:"Ex: Alto / Superior",fDef:"Definição",defPh:"Aspeto visual e características",fConst:"Constituição física",constPh:"Composição (gotas, cristais...)",fForm:"Formação",formPh:"Como e onde se forma",notesL:"Notas adicionais",notesPh:"Observações gerais...",refTitle:"Referências para identificação",coverL:"Cobertura",skyColorL:"Cor do céu",visibL:"Visibilidade",hiClouds:"Alto nível",midClouds:"Nível médio",loClouds:"Baixo nível",precipL:"Precipitação",tempL:"Temperatura",humL:"Humidade",classifL:"Classificações",notesLL:"Notas",noName:"Sem nome",noPrec:"Não",noneV:"Nenhuma"},en:{appTitle:"Cloud Observation",appSub:"Climatology · Faculty of Arts, UP",start:"Start observation",profBtn:"Instructor access",actNote:"Practical activity — Topics 6 & 7",profTitle:"Instructor dashboard",profCount:n=>`${n} observation(s) collected`,refresh:"Refresh",exitBtn:"Exit",loading:"Loading...",noSubs:"No observations yet.",profCode:"Access code",enterBtn:"Enter",backBtn:"Back",wrongCode:"Incorrect code.",doneTitle:"Observation recorded!",doneMsg:"Your data has been saved successfully.",newObs:"New observation",homeBtn:"Home",prevBtn:"Previous",nextBtn:"Next",submitBtn:"Submit observation",savingBtn:"Saving...",saveErr:"Error saving. Check your connection.",steps:["Identification","Photograph","Sky Coverage","Colour & Visibility","Cloud Types","Surface Conditions","Classification"],fName:"Full name",fGroup:"Group",fGroupPh:"E.g. Group 3",fLoc:"Observation location",fDate:"Date",photoTitle:"Sky Photograph",photoDesc:"Take a photograph of the sky at the observation location.",takePhoto:"Take photo",changePhoto:"Change photo",coverType:"Coverage type",coverTotal:"Total sky coverage",coverPartial:"Partial cloud coverage",coverWhat:"What covers the sky?",coverPct:"Coverage percentage",coverOpts:["Fog","Heavy rain","Heavy snow","Sand","Spray / Smoke","Dust","Volcanic ash"],partialOpts:[{v:"none",l:"None"},{v:"few",l:"Few (< 10%)"},{v:"isolated",l:"Isolated (10–25%)"},{v:"scattered",l:"Scattered (25–50%)"},{v:"broken",l:"Broken (50–90%)"},{v:"overcast",l:"Overcast (90–100%)"}],skyColor:"Sky colour",visibility:"Visibility",colorOpts:["Cannot observe","Deep blue","Blue","Light blue","Pale milky blue"],visibOpts:["Cannot observe","Exceptionally clear","Clear","Slightly hazy","Very hazy","Extremely hazy"],cloudDesc:"Select all genera you can identify.",noneLabel:"None",precip:"Precipitation",rain:"Rain",snow:"Snow",temp:"Temperature (°C)",humid:"Humidity (%)",tempPh:"E.g. 16",humPh:"E.g. 78",classifDesc:"Fill in the classification of clouds observed. Use the button to add more.",cloudN:n=>`Cloud ${n}`,addCloud:"+ Add cloud",removeCloud:"Remove",fTipo:"Type and abbreviation",tipoPh:"E.g. Cirrus — Ci",fNivel:"Level / Tier",nivelPh:"E.g. High / Superior",fDef:"Definition",defPh:"Visual appearance and characteristics",fConst:"Physical composition",constPh:"Composition (droplets, crystals...)",fForm:"Formation",formPh:"How and where it forms",notesL:"Additional notes",notesPh:"General observations...",refTitle:"Cloud identification references",coverL:"Coverage",skyColorL:"Sky colour",visibL:"Visibility",hiClouds:"High level",midClouds:"Mid level",loClouds:"Low level",precipL:"Precipitation",tempL:"Temperature",humL:"Humidity",classifL:"Classifications",notesLL:"Notes",noName:"No name",noPrec:"No",noneV:"None"}};
+
+const CL={pt:[{key:"alto",label:"Alto Nível",sub:"acima de 6.000 m",ac:"#185FA5",types:[{code:"Ci",name:"Cirrus",desc:"Filamentos brancos delicados, aspeto fibroso ou sedoso"},{code:"Cc",name:"Cirrocumulus",desc:"Pequenas massas brancas em padrão regular"},{code:"Cs",name:"Cirrostratus",desc:"Véu esbranquiçado, provoca halos solares e lunares"}]},{key:"medio",label:"Nível Médio",sub:"2.000 – 6.000 m",ac:"#3B6D11",types:[{code:"Ac",name:"Altocumulus",desc:"Massas brancas/cinzentas em camadas ou grupos"},{code:"As",name:"Altostratus",desc:"Camada cinzenta ou azulada, uniforme e espessa"},{code:"Ns",name:"Nimbostratus",desc:"Camada escura e espessa, chuva ou neve contínua"}]},{key:"baixo",label:"Baixo Nível",sub:"abaixo de 2.000 m",ac:"#854F0B",types:[{code:"St",name:"Stratus",desc:"Camada baixa e uniforme, como nevoeiro elevado"},{code:"Sc",name:"Stratocumulus",desc:"Massas arredondadas acinzentadas em grupos"},{code:"Cu",name:"Cumulus",desc:"Base plana, topo em couve-flor, tempo de bom"},{code:"Cb",name:"Cumulonimbus",desc:"Grande topo em bigorna, trovoada e precipitação intensa"}]}],en:[{key:"alto",label:"High Level",sub:"above 6,000 m",ac:"#185FA5",types:[{code:"Ci",name:"Cirrus",desc:"Delicate white filaments, fibrous or silky"},{code:"Cc",name:"Cirrocumulus",desc:"Small white masses in regular patterns"},{code:"Cs",name:"Cirrostratus",desc:"Whitish veil causing solar and lunar halos"}]},{key:"medio",label:"Mid Level",sub:"2,000 – 6,000 m",ac:"#3B6D11",types:[{code:"Ac",name:"Altocumulus",desc:"White/grey masses in layers or groups"},{code:"As",name:"Altostratus",desc:"Grey or bluish layer, uniform and thick"},{code:"Ns",name:"Nimbostratus",desc:"Dark thick layer, continuous rain or snow"}]},{key:"baixo",label:"Low Level",sub:"below 2,000 m",ac:"#854F0B",types:[{code:"St",name:"Stratus",desc:"Low uniform layer, like elevated fog"},{code:"Sc",name:"Stratocumulus",desc:"Rounded greyish masses in groups"},{code:"Cu",name:"Cumulus",desc:"Flat base, cauliflower top, fair weather"},{code:"Cb",name:"Cumulonimbus",desc:"Large anvil top, thunderstorm and heavy rain"}]}]};
+
+const REFS=[{label:"Tipos de Nuvens — USP",url:"http://www.master.iag.usp.br/static/downloads/apostilas/aula05_Tipos-de-nuvens_1.pdf"},{label:"Atlas Internacional de Nuvens — UA",url:"http://torre.fis.ua.pt/IMO_CapII.asp"},{label:"Ten Main Clouds — Cloud Appreciation Society",url:"https://cloudappreciationsociety.org/wp-content/uploads/2022/01/Printout-1.1-Ten-Main-Clouds-Chart.pdf"},{label:"World Meteorological Day — WMO",url:"https://public.wmo.int/en/WorldMetDay2017/resources"},{label:"Cloud Chart — National Weather Service",url:"https://www.weather.gov/jetstream/cloudchart"}];
+
+// ─── STATE ──────────────────────────────────────────────
+const EC={tipo:"",nivel:"",def:"",composicao:"",formacao:""};
+function iF(){return{nome:"",grupo:"",local:"",data:new Date().toLocaleDateString("pt-PT"),foto:null,cobOpcao:"",cobTotal:"",cobParcial:"",cor:"",visib:"",nuvAlto:[],nuvMedio:[],nuvBaixo:[],chuva:false,neve:false,temp:"",humidade:"",classif:[{...EC}],notas:""};}
+let S={lang:"pt",screen:"home",step:0,form:iF(),saving:false,profPass:"",profErr:"",subs:[],loading:false,expanded:null};
+function ss(p){S=Object.assign({},S,p);render();}
+
+function compressImg(file,cb){const r=new FileReader();r.onload=e=>{const i=new Image();i.onload=()=>{const M=960;let w=i.width,h=i.height;if(w>M||h>M){if(w>h){h=Math.round(h*M/w);w=M;}else{w=Math.round(w*M/h);h=M;}}const c=document.createElement("canvas");c.width=w;c.height=h;c.getContext("2d").drawImage(i,0,0,w,h);cb(c.toDataURL("image/jpeg",.65));};i.src=e.target.result;};r.readAsDataURL(file);}
+
+function t(){return TR[S.lang];}
+function lv(){return CL[S.lang];}
+function e(s){return String(s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;");}
+function sf(k,v){ss({form:Object.assign({},S.form,{[k]:v})});}
+function sc(i,k,v){const c=[...S.form.classif];c[i]=Object.assign({},c[i],{[k]:v});ss({form:Object.assign({},S.form,{classif:c})});}
+
+// ─── HTML BUILDERS ──────────────────────────────────────
+function rg(opts,cur,name){return opts.map(o=>{const v=typeof o==="string"?o:(o.value||o.v);const l=typeof o==="string"?o:(o.label||o.l);const on=cur===v;return`<div class="ro ${on?"on":""}" data-radio="${name}" data-val="${e(v)}"><div class="rdot"></div><span class="rl">${e(l)}</span></div>`;}).join("");}
+function fl(txt){return`<span class="fl">${e(txt)}</span>`;}
+function st(n,txt){return`<div class="stitle"><span class="sbadge">${n}</span><span class="stext">${e(txt)}</span></div>`;}
+function ck(){return`<svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg>`;}
+function chv(up){return`<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#999" stroke-width="2" style="transform:${up?"rotate(180deg)":"none"};flex-shrink:0"><polyline points="6 9 12 15 18 9"/></svg>`;}
+
+// ─── SCREENS ────────────────────────────────────────────
+function rHome(){const tr=t();return`<div class="pg-n"><div class="lt"><button class="lb ${S.lang==="pt"?"on":""}" data-lang="pt">🇵🇹 Português</button><button class="lb ${S.lang==="en"?"on":""}" data-lang="en">🇬🇧 English</button></div><div style="text-align:center;margin-bottom:2rem"><div class="cico"><svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#185FA5" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M17.5 19H9a7 7 0 1 1 6.71-9h1.79a4.5 4.5 0 1 1 0 9Z"/></svg></div><h1>${e(tr.appTitle)}</h1><p class="muted" style="margin-top:.375rem">${e(tr.appSub)}</p></div><button class="btn bp" id="btn-start">${e(tr.start)}</button><button class="btn bs" id="btn-prof" style="margin-top:.625rem">${e(tr.profBtn)}</button><p class="tiny" style="text-align:center;margin-top:1.5rem">${e(tr.actNote)}</p></div>`;}
+
+function rProfLogin(){const tr=t();return`<div class="pg-n"><button class="bk" id="btn-back"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="15 18 9 12 15 6"/></svg>${e(tr.backBtn)}</button><div class="card"><h2 style="margin-bottom:1rem">${e(tr.profBtn)}</h2>${fl(tr.profCode)}<input type="password" id="prof-pass" placeholder="${e(tr.profCode)}" value="${e(S.profPass)}" style="margin-bottom:.25rem">${S.profErr?`<p class="err">${e(S.profErr)}</p>`:""}<button class="btn bp" id="btn-enter" style="margin-top:.75rem">${e(tr.enterBtn)}</button></div></div>`;}
+
+function rDone(){const tr=t();return`<div class="pg-n" style="text-align:center"><div class="sring"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#4caf50" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></div><h2>${e(tr.doneTitle)}</h2><p class="muted" style="margin:.5rem 0 1.5rem">${e(tr.doneMsg)}</p><button class="btn bp" id="btn-new" style="max-width:260px;margin:0 auto">${e(tr.newObs)}</button><button class="btn bs" id="btn-home" style="max-width:260px;margin:.625rem auto 0">${e(tr.homeBtn)}</button></div>`;}
+
+function rProf(){const tr=t();let body;if(S.loading){body=`<p class="muted" style="text-align:center;padding:3rem">${e(tr.loading)}</p>`;}else if(!S.subs.length){body=`<div class="card" style="text-align:center;padding:3rem"><p class="muted">${e(tr.noSubs)}</p></div>`;}else{body=S.subs.map((sub,i)=>{const all=[...(sub.nuvAlto||[]),...(sub.nuvMedio||[]),...(sub.nuvBaixo||[])];const open=S.expanded===i;const st2=TR[sub.lang||"pt"];const tags=all.map(c=>`<span class="tag">${e(c)}</span>`).join("");const thumb=sub.foto?`<img class="thumb" src="${sub.foto}" alt="">` :"";let bd="";if(open){const rows=[[st2.coverL,sub.cobOpcao==="total"?`Total: ${sub.cobTotal||""}`:sub.cobOpcao==="parcial"?`Parcial: ${sub.cobParcial||""}`:null],[st2.skyColorL,sub.cor],[st2.visibL,sub.visib],[st2.hiClouds,(sub.nuvAlto||[]).join(", ")||st2.noneV],[st2.midClouds,(sub.nuvMedio||[]).join(", ")||st2.noneV],[st2.loClouds,(sub.nuvBaixo||[]).join(", ")||st2.noneV],[st2.precipL,[sub.chuva&&st2.rain,sub.neve&&st2.snow].filter(Boolean).join(", ")||st2.noPrec],[st2.tempL,sub.temp?`${sub.temp} °C`:null],[st2.humL,sub.humidade?`${sub.humidade}%`:null],[st2.notesLL,sub.notas]].filter(r=>r[1]).map(([l,v])=>`<div class="dr"><span class="dl">${e(l)}</span><span class="dv">${e(v)}</span></div>`).join("");const vc=(sub.classif||[]).filter(c=>c.tipo);const ci=vc.length?`<div style="margin-top:.75rem"><div class="dr"><span class="dl">${e(st2.classifL)}</span></div>${vc.map(c=>`<div style="background:#f8f9fa;border-radius:8px;padding:.625rem;margin-bottom:.375rem;font-size:.8125rem"><div style="font-weight:600;color:#185FA5;margin-bottom:.25rem">${e(c.tipo)}${c.nivel?` — ${e(c.nivel)}`:""}</div>${c.def?`<div><b>Def.:</b> ${e(c.def)}</div>`:""}${c.composicao?`<div><b>Const.:</b> ${e(c.composicao)}</div>`:""}${c.formacao?`<div><b>Form.:</b> ${e(c.formacao)}</div>`:""}</div>`).join("")}</div>`:"";const ph=sub.foto?`<div style="margin-bottom:.75rem"><img src="${sub.foto}" style="width:100%;max-height:220px;object-fit:cover;border-radius:8px;border:1px solid #e0e0e0"></div>`:"";bd=`<div class="pcb">${ph}${rows}${ci}</div>`;}const meta=[sub.grupo&&`Grupo: ${sub.grupo}`,sub.local,sub.data].filter(Boolean).join(" · ");return`<div class="pc"><div class="pch" data-toggle="${i}"><div style="flex:1;min-width:0"><div style="font-weight:600;font-size:.9375rem">${e(sub.nome||tr.noName)}</div><div class="tiny" style="margin-top:2px">${e(meta)}</div>${tags?`<div style="margin-top:.375rem">${tags}</div>`:""}</div><div style="display:flex;align-items:center;gap:.5rem;margin-left:.75rem;flex-shrink:0">${thumb}${chv(open)}</div></div>${bd}</div>`;}).join("");}return`<div class="pg-w"><div class="ph"><div><h2>${e(tr.profTitle)}</h2><p class="tiny">${e(tr.profCount(S.subs.length))}</p></div><div class="phb"><button class="phbt" id="btn-refresh">${e(tr.refresh)}</button><button class="phbt" id="btn-exit">${e(tr.exitBtn)}</button></div></div>${body}</div>`;}
+
+function rS0(){const tr=t();return[["nome",tr.fName,"text"],["grupo",tr.fGroup,"text"],["local",tr.fLoc,"text"],["data",tr.fDate,"text"]].map(([k,ph])=>`<div class="fld">${fl(ph)}<input type="text" id="f-${k}" value="${e(S.form[k])}" placeholder="${e(k==="grupo"?tr.fGroupPh:ph)}"></div>`).join("");}
+
+function rS1(){const tr=t();const ph=S.form.foto?`<img class="photo-prev" src="${S.form.foto}" alt="Céu"><button class="btn bs" id="btn-change-photo" style="margin-top:0">${e(tr.changePhoto)}</button>`:`<button class="btn bp" id="btn-take-photo" style="display:flex;align-items:center;justify-content:center;gap:.5rem"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg>${e(tr.takePhoto)}</button>`;return`${st("A",tr.photoTitle)}<p class="muted" style="margin-bottom:1rem;font-size:.875rem">${e(tr.photoDesc)}</p><input type="file" id="photo-input" accept="image/*" capture="environment" style="display:none">${ph}`;}
+
+function rS2(){const tr=t();const f=S.form;let sub="";if(f.cobOpcao==="total"){sub=`<div style="margin-top:1rem">${fl(tr.coverWhat)}<div class="rd">${rg(tr.coverOpts,f.cobTotal,"cobTotal")}</div></div>`;}else if(f.cobOpcao==="parcial"){sub=`<div style="margin-top:1rem">${fl(tr.coverPct)}<div class="rd">${rg(tr.partialOpts.map(o=>({value:o.v,label:o.l})),f.cobParcial,"cobParcial")}</div></div>`;}return`${st("B",tr.coverType)}<div class="rd">${rg([{value:"total",label:tr.coverTotal},{value:"parcial",label:tr.coverPartial}],f.cobOpcao,"cobOpcao")}</div>${sub}`;}
+
+function rS3(){const tr=t();const f=S.form;return`${st("C",t().steps[3])}${fl(tr.skyColor)}<div class="rd">${rg(tr.colorOpts,f.cor,"cor")}</div><div style="height:1rem"></div>${fl(tr.visibility)}<div class="rd">${rg(tr.visibOpts,f.visib,"visib")}</div>`;}
+
+function rS4(){const tr=t();const f=S.form;return`${st("D",t().steps[4])}<p class="muted" style="margin-bottom:1rem;font-size:.875rem">${e(tr.cloudDesc)}</p>${lv().map(lev=>{const sk=`nuv${lev.key.charAt(0).toUpperCase()+lev.key.slice(1)}`;const sel=f[sk]||[];const chips=[`<button class="chip ${sel.length===0?"on":""}" data-cn="${sk}" style="--ac:${lev.ac}">${e(tr.noneLabel)}</button>`,...lev.types.map(tp=>`<button class="chip ${sel.includes(tp.code)?"on":""}" data-c="${sk}" data-code="${tp.code}" style="--ac:${lev.ac}">${e(tp.code)} — ${e(tp.name)}</button>`)].join("");const hints=sel.map(code=>{const tp=lev.types.find(x=>x.code===code);return tp?`<div class="hint" style="--ac:${lev.ac}"><b style="color:${lev.ac}">${e(tp.code)}:</b> ${e(tp.desc)}</div>`:""}).join("");return`<div style="margin-bottom:1.25rem"><div style="display:flex;align-items:baseline;gap:.375rem;margin-bottom:.5rem"><span style="font-size:.875rem;font-weight:600;color:${lev.ac}">${e(lev.label)}</span><span class="tiny">${e(lev.sub)}</span></div><div class="chips">${chips}</div>${hints}</div>`;}).join("")}`;}
+
+function rS5(){const tr=t();const f=S.form;return`${st("E",t().steps[5])}${fl(tr.precip)}<div class="chk-g" style="margin-bottom:1rem"><div class="chk ${f.chuva?"on":""}" data-ck="chuva"><div class="cbox">${ck()}</div><span style="font-size:.875rem">${e(tr.rain)}</span></div><div class="chk ${f.neve?"on":""}" data-ck="neve"><div class="cbox">${ck()}</div><span style="font-size:.875rem">${e(tr.snow)}</span></div></div><div class="g2"><div class="fld">${fl(tr.temp)}<input type="number" id="f-temp" value="${e(S.form.temp)}" placeholder="${e(tr.tempPh)}"></div><div class="fld">${fl(tr.humid)}<input type="number" id="f-humidade" value="${e(S.form.humidade)}" placeholder="${e(tr.humPh)}"></div></div>`;}
+
+function rS6(){const tr=t();const f=S.form;const blocks=f.classif.map((c,i)=>`<div class="cb"><div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:.75rem"><span style="font-size:.8125rem;font-weight:600;color:#185FA5">${e(tr.cloudN(i+1))}</span>${i>0?`<button class="rm" data-rc="${i}">${e(tr.removeCloud)}</button>`:""}</div>${[["tipo",tr.fTipo,tr.tipoPh,"i"],["nivel",tr.fNivel,tr.nivelPh,"i"],["def",tr.fDef,tr.defPh,"a"],["composicao",tr.fConst,tr.constPh,"a"],["formacao",tr.fForm,tr.formPh,"a"]].map(([k,lbl,ph,type])=>`<div style="margin-bottom:.625rem">${fl(lbl)}${type==="a"?`<textarea id="c-${i}-${k}" rows="2" placeholder="${e(ph)}">${e(c[k])}</textarea>`:`<input type="text" id="c-${i}-${k}" value="${e(c[k])}" placeholder="${e(ph)}">`}</div>`).join("")}</div>`).join("");const refs=REFS.map(r=>`<a href="${r.url}" target="_blank" rel="noopener noreferrer" class="ref-a"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink:0"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>${e(r.label)}</a>`).join("");return`${st("F",t().steps[6])}<p class="muted" style="margin-bottom:1rem;font-size:.875rem">${e(tr.classifDesc)}</p>${blocks}<button class="btn bs" id="btn-add" style="margin-bottom:1.25rem">${e(tr.addCloud)}</button><div style="margin-bottom:1.25rem">${fl(tr.notesL)}<textarea id="f-notas" rows="3" placeholder="${e(tr.notesPh)}">${e(f.notas)}</textarea></div><div style="border-top:1px solid #e8eaed;padding-top:1rem">${fl(tr.refTitle)}${refs}</div>`;}
+
+function rStudent(){const tr=t();const N=tr.steps.length;const pct=Math.round(((S.step+1)/N)*100);const fns=[rS0,rS1,rS2,rS3,rS4,rS5,rS6];const isLast=S.step===N-1;return`<div class="pg"><div class="sh"><button class="bk" id="btn-prev-step"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="15 18 9 12 15 6"/></svg>${e(S.step===0?tr.homeBtn:tr.prevBtn)}</button><span class="tiny">${S.step+1} / ${N}</span></div><div class="prog"><div class="progf" style="width:${pct}%"></div></div><h2 style="margin-bottom:1rem">${e(tr.steps[S.step])}</h2><div class="card">${fns[S.step]()}</div></div><div class="bnav">${isLast?`<button class="btn bp" id="btn-submit" ${S.saving?"disabled style='opacity:.6'":""}>${S.saving?e(tr.savingBtn):e(tr.submitBtn)}</button>`:`<button class="btn bp" id="btn-next-step">${e(tr.nextBtn)}</button>`}</div>`;}
+
+// ─── RENDER ─────────────────────────────────────────────
+function render(){const m={home:rHome,profLogin:rProfLogin,done:rDone,prof:rProf,student:rStudent};document.getElementById("app").innerHTML=m[S.screen]();attachListeners();}
+
+// ─── SAVE INPUTS FROM DOM ───────────────────────────────
+function saveInputs(){const g=id=>(document.getElementById(id)||{}).value||"";if(S.step===0){Object.assign(S.form,{nome:g("f-nome"),grupo:g("f-grupo"),local:g("f-local"),data:g("f-data")});}if(S.step===5){Object.assign(S.form,{temp:g("f-temp"),humidade:g("f-humidade")});}if(S.step===6){const notas=g("f-notas");const classif=S.form.classif.map((c,i)=>({tipo:g(`c-${i}-tipo`)||c.tipo,nivel:g(`c-${i}-nivel`)||c.nivel,def:g(`c-${i}-def`)||c.def,composicao:g(`c-${i}-composicao`)||c.composicao,formacao:g(`c-${i}-formacao`)||c.formacao}));Object.assign(S.form,{notas,classif});}}
+
+// ─── SUBMIT ─────────────────────────────────────────────
+async function submitForm(){ss({saving:true});try{await fetch(GAS_URL,{method:"POST",body:JSON.stringify({...S.form,ts:new Date().toISOString(),lang:S.lang})});ss({saving:false,screen:"done"});}catch(err){ss({saving:false});alert(t().saveErr);}}
+
+async function loadSubs(){try{const r=await fetch(`${GAS_URL}?action=getData&code=${PROF_CODE}`);const d=await r.json();ss({subs:Array.isArray(d)?d:[],loading:false});}catch(err){ss({subs:[],loading:false});alert("Erro ao carregar. Verifica o URL do Apps Script.");}}
+
+// ─── LISTENERS ──────────────────────────────────────────
+function attachListeners(){const $=id=>document.getElementById(id);const on=(id,ev,fn)=>{const el=$(id);if(el)el.addEventListener(ev,fn);};
+document.querySelectorAll("[data-lang]").forEach(b=>b.addEventListener("click",()=>ss({lang:b.dataset.lang})));
+on("btn-start","click",()=>ss({step:0,form:iF(),screen:"student"}));
+on("btn-prof","click",()=>ss({screen:"profLogin",profPass:"",profErr:""}));
+on("btn-back","click",()=>ss({screen:"home"}));
+on("prof-pass","input",e=>{S.profPass=e.target.value;});
+on("btn-enter","click",()=>{const p=($("prof-pass")||{}).value||"";if(p===PROF_CODE){ss({screen:"prof",subs:[],loading:true,expanded:null});loadSubs();}else ss({profErr:t().wrongCode,profPass:p});});
+on("prof-pass","keydown",e=>{if(e.key==="Enter")($("btn-enter")||{click:()=>{}}).click();});
+on("btn-refresh","click",()=>{ss({loading:true,subs:[]});loadSubs();});
+on("btn-exit","click",()=>ss({screen:"home"}));
+on("btn-new","click",()=>ss({step:0,form:iF(),screen:"student"}));
+on("btn-home","click",()=>ss({screen:"home"}));
+document.querySelectorAll("[data-toggle]").forEach(el=>el.addEventListener("click",()=>{const i=parseInt(el.dataset.toggle);ss({expanded:S.expanded===i?null:i});}));
+on("btn-prev-step","click",()=>{saveInputs();if(S.step===0)ss({screen:"home"});else ss({step:S.step-1});});
+on("btn-next-step","click",()=>{saveInputs();ss({step:S.step+1});});
+on("btn-submit","click",()=>{saveInputs();submitForm();});
+on("btn-take-photo","click",()=>($("photo-input")||{click:()=>{}}).click());
+on("btn-change-photo","click",()=>($("photo-input")||{click:()=>{}}).click());
+on("photo-input","change",ev=>{const f=ev.target.files[0];if(!f)return;compressImg(f,d=>sf("foto",d));});
+document.querySelectorAll("[data-radio]").forEach(el=>el.addEventListener("click",()=>sf(el.dataset.radio,el.dataset.val)));
+document.querySelectorAll("[data-cn]").forEach(b=>b.addEventListener("click",()=>sf(b.dataset.cn,[])));
+document.querySelectorAll("[data-c]").forEach(b=>b.addEventListener("click",()=>{const k=b.dataset.c;const code=b.dataset.code;const cur=S.form[k]||[];sf(k,cur.includes(code)?cur.filter(x=>x!==code):[...cur,code]);}));
+document.querySelectorAll("[data-ck]").forEach(el=>el.addEventListener("click",()=>sf(el.dataset.ck,!S.form[el.dataset.ck])));
+on("btn-add","click",()=>{saveInputs();const f=Object.assign({},S.form,{classif:[...S.form.classif,{...EC}]});ss({form:f});});
+document.querySelectorAll("[data-rc]").forEach(b=>b.addEventListener("click",()=>{saveInputs();const i=parseInt(b.dataset.rc);const f=Object.assign({},S.form,{classif:S.form.classif.filter((_,j)=>j!==i)});ss({form:f});}));
+}
+
+render();
+</script>
+</body>
+</html>
